@@ -3,10 +3,10 @@
 ip_addr=$(ifconfig en0 | grep "inet" | grep "netmask" | awk '{print $2}')
 networkPrefix=$(echo "${ip_addr}" | awk -F "." '{print $1"."$2"."$3}')
 
-temp_file="/Users/omkumarsingh/Desktop/LinuxProjects/temp/active.txt"
+temp_file="/temp/active.txt"
 > "$temp_file"
 count=1
-while [[ ${count} -le 254 ]]; do
+while [[ ${count} -le 25 ]]; do
     current_ip="${networkPrefix}.${count}"
 (
     ping -c 1 "${current_ip}" > /dev/null 2>&1
