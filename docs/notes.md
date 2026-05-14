@@ -6,3 +6,5 @@ Day1 :
 - Stored reachable host in /temp/active.txt.
 - Learned issue with relative path while running script from bin/.
 - Planned next step: device selection + SSH key-based authentication.
+Day2 :
+- Some devices may not resposd to ping (ICMP blocked) so they may not appear in active host result.This will be improved in the future version using ARP or port based discovery.

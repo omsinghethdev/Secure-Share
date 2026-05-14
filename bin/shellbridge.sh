@@ -15,8 +15,23 @@ while [[ ${count} -le 254 ]]; do
 ) &  
        (( count=count+1 ))
 done
+active_devices="/Users/omkumarsingh/Desktop/LinuxProjects/ShellBridge/temp/active.txt"
+> "$active_devices"
+cat "${ping_log}" | grep -F '64 bytes from' >> "${active_devices}"
 
+active_device_ip=($(cat "${active_devices}" | awk '{print $4 }'| sed 's/:$//') )
 
+index=1
+
+for ip in "${active_device_ip[@]}"; do
+    echo "${index}: ${ip}"
+    ((index=index+1))
+done
+
+read -p "Select device number:" choice
+
+selected_ip="${active_device_ip[$((choice - 1))]}"
+echo "Selected device: ${selected_ip}"
 
 
 
