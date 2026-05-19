@@ -45,6 +45,8 @@ fi
 selected_ip="${active_device_ip[$((choice - 1))]}"
 echo "Selected device: ${selected_ip}"
 read -p "Enter remote user name:" remote_user
+read -p "Enter SSH port [default: 22]: " ssh_port
+ssh_port=${ssh_port:-22}
 # 5. SSH Authentication Setup
 ssh_private_key="/Users/omkumarsingh/.ssh/id_ed25519"
 ssh_pub_key="/Users/omkumarsingh/.ssh/id_ed25519.pub"
@@ -56,14 +58,14 @@ else
 fi
 remote_target="${remote_user}@${selected_ip}"
 
-if ssh -o BatchMode=yes "${remote_target}" "echo connected" > /dev/null 2>&1 ; then
+if ssh -p "${ssh_port}" -o BatchMode=yes "${remote_target}" "echo connected" > /dev/null 2>&1 ; then
     echo "Passwordless SSH already works. Skipping key copy."
 else
 echo "Passwordless SSH not configured. Copying public key..."
-    ssh-copy-id -i "${ssh_pub_key}" "${remote_target}"
+    ssh-copy-id -p "${ssh_port}" -i "${ssh_pub_key}" "${remote_target}"
 fi
 # verify SSH before transfer
-if ssh -o BatchMode=yes "$remote_target" "echo connected" > /dev/null 2>&1; then
+if ssh -p "${ssh_port}" -o BatchMode=yes "$remote_target" "echo connected" > /dev/null 2>&1; then
     echo "SSH authentication setup successful."
 else
     echo "SSH authentication setup failed."
@@ -73,9 +75,9 @@ fi
 read -p "Enter file path to transfer: " file_path
 read -p "Enter remote destination path: " remote_path
 
-if [[ -f "$file_path" ]]; then
+if [[ -e "${file_path}" ]]; then
 
-    scp "$file_path" "${remote_target}:${remote_path}"
+    scp   -r -P "${ssh_port}" "$file_path" "${remote_target}:${remote_path}"
     if [[ $? -eq 0 ]]; then
         echo "File transferred successfully."
     else
